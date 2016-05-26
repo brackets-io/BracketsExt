@@ -1,12 +1,12 @@
 /*
  * ENG1003 Assignment Uploader Brackets extension
  *
- * Written by Nawfal Ali
+ * Written by Nawfal Ali and Michael Wybrow
  *
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015  Monash University
+ * Copyright (c) 2015-2016  Monash University
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,6 +74,47 @@ define(function (require, exports, module) {
         console.log("[ENG1003Uploader] " + s);
     }
 
+    function populateAssignments() {
+        var $dlg = $(".eng1003setting-dialog.instance");
+        
+        var $serverField = $dlg.find("#server")
+        systemSettings.server = $serverField.val();
+        
+        var $assignmentField = $dlg.find("#assignment")
+
+        var server = systemSettings.server.replace(/\/$/, "");
+        var url = server + '/uploader/assignmentslist.php?callback=?';   
+        $.getJSON(url).success(function(assignments) {
+            
+            // Fill in assignments fields returned by the server.
+            var html = "";
+            var selected = "";
+            for (var i = 0; i < assignments.length; ++i) {
+                if (systemSettings.assignment === assignments[i].code)
+                {
+                    selected = "selected ";
+                }
+                html += "<option " + selected + "value=\"" + assignments[i].code + "\">" + assignments[i].title + "</option>";
+            }
+            $assignmentField.html(html);
+
+            // If no selection, or not available, select first one.
+            if (selected === "")
+            {
+                var firstAssignment = $("#assignment option:first").val();
+                $assignmentField.val(firstAssignment);
+    
+            }
+            
+            // Enable Okay button
+            $dlg.find(".dialog-button[data-button-id='ok']").removeAttr("disabled");
+            
+        }).error(function(jqXHR, textStatus, errorThrown) {
+            
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", "Invalid server: " + server);
+        });
+
+    }
     // This function handles the settings windows
     function handleSettings() {
         // Show the settings window
@@ -83,15 +124,12 @@ define(function (require, exports, module) {
         $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
         $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
 
-        // Update the Assignment List Box.  Select the first option by default.
-        var chosenAssignment = $("#assignment option:first").val();
-        if (systemSettings.assignment) {
-
-            // Or use the user's saved preference. 
-            chosenAssignment = systemSettings.assignment;
-        }
-        $dlg.find("#assignment").val(chosenAssignment);
-
+        // Call the server to populate assignments list.
+        populateAssignments();
+        
+        // Call the server again if the server setting changes.
+        $dlg.find('#server').focusout(populateAssignments);
+        
         // if the user hits the cancel, this function closes the settings window
         function handleCancel() {
             Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
@@ -143,7 +181,7 @@ define(function (require, exports, module) {
         }
     }
 
-    // This function is responsable for uploading the current document to the server
+    // This function is responsible for uploading the current document to the server
     function UploadCurrentDocument() {
 
         if (firstRun) {
@@ -219,7 +257,7 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         //Load CSS file
         ExtensionUtils.loadStyleSheet(module, "css/style.css");
-        log("Upload Assignment Extenstion");
+        log("Upload Assignment Extension");
         getSettingsFromStorage();
 
         // Settings Window and Shortcut
