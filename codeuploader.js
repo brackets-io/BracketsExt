@@ -65,6 +65,11 @@ define(function (require, exports, module) {
         }
 
         function publishFiles(listOfFiles) {
+            if (listOfFiles.length === 0) {
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", "No valid (correctly named) files for upload.");
+                return;
+            }
+            
             var files2PublishJSON = JSON.stringify(listOfFiles);
             var server = systemSettings.server.replace(/\/$/, "");
             var path = server + '/uploader/publish.php';
