@@ -66,7 +66,8 @@ define(function (require, exports, module) {
 
         function publishFiles(listOfFiles) {
             var files2PublishJSON = JSON.stringify(listOfFiles);
-            var path              = 'https://eng1003.eng.monash.edu/uploader/publish.php';
+            var server = systemSettings.server.replace(/\/$/, "");
+            var path = server + '/uploader/publish.php';
             var params            = {
                 teamDir         : systemSettings.teamDir,
                 user            : systemSettings.userName,
@@ -81,7 +82,6 @@ define(function (require, exports, module) {
         this.uploadToWebsite = function (listOfFiles, listFilesFullPath) {
             console.log('uploadToWebsite() called');
             var filesJSON             = encodeURIComponent(JSON.stringify(listOfFiles));
-            systemSettings.assignment = "16-S1-A2";
             var server                = systemSettings.server.replace(/\/$/, "");
             var str                   = server + '/uploader/publishcheck.php?teamDir=' + systemSettings.teamDir + '&user=' +
                 systemSettings.userName + '&assignment=' + systemSettings.assignment + '&files=' + filesJSON + '&callback=define';
