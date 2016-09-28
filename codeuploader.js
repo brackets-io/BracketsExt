@@ -1,12 +1,14 @@
 /*
- * Assignment uploader
+ * vim: ts=4 sw=4 et tw=0 wm=0
+ *
+ * ENG1003 Assignment Uploader Brackets extension
  *
  * Written by Michael Wybrow
  *
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015  Monash University
+ * Copyright (c) 2015-2016  Monash University
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

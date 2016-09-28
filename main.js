@@ -1,4 +1,6 @@
 /*
+ * vim: ts=4 sw=4 et tw=0 wm=0
+ *
  * ENG1003 Assignment Uploader Brackets extension
  *
  * Written by Nawfal Ali and Michael Wybrow
@@ -88,10 +90,9 @@ define(function (require, exports, module) {
             
             // Fill in assignments fields returned by the server.
             var html = "";
-            var selected = "";
             for (var i = 0; i < assignments.length; ++i) {
-                if (systemSettings.assignment === assignments[i].code)
-                {
+                var selected = "";
+                if (systemSettings.assignment === assignments[i].code) {
                     selected = "selected ";
                 }
                 html += "<option " + selected + "value=\"" + assignments[i].code + "\">" + assignments[i].title + "</option>";
@@ -99,8 +100,7 @@ define(function (require, exports, module) {
             $assignmentField.html(html);
 
             // If no selection, or not available, select first one.
-            if (selected === "")
-            {
+            if (selected === "") {
                 var firstAssignment = $("#assignment option:first").val();
                 $assignmentField.val(firstAssignment);
     
