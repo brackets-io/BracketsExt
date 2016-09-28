@@ -73,7 +73,7 @@ define(function (require, exports, module) {
             }
             
             var files2PublishJSON = JSON.stringify(listOfFiles);
-            var server = systemSettings.server.replace(/\/$/, "");
+            var server = systemSettings.server;
             var path = server + '/uploader/publish.php';
             var params            = {
                 teamDir         : systemSettings.teamDir,
@@ -89,7 +89,7 @@ define(function (require, exports, module) {
         this.uploadToWebsite = function (listOfFiles, listFilesFullPath) {
             console.log('uploadToWebsite() called');
             var filesJSON             = encodeURIComponent(JSON.stringify(listOfFiles));
-            var server                = systemSettings.server.replace(/\/$/, "");
+            var server                = systemSettings.server;
             var str                   = server + '/uploader/publishcheck.php?teamDir=' + systemSettings.teamDir + '&user=' +
                 systemSettings.userName + '&assignment=' + systemSettings.assignment + '&files=' + filesJSON + '&callback=define';
             require([str], function (data) {

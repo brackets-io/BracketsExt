@@ -32,7 +32,7 @@
 
 define(function (require, exports, module) {
     var systemSettings = {
-        server       : 'https://eng1003.monash/',
+        server       : 'https://eng1003.monash',
         teamDir      : '',
         userName     : '',
         updateTeamDir: '',
@@ -84,7 +84,7 @@ define(function (require, exports, module) {
         
         var $assignmentField = $dlg.find("#assignment")
 
-        var server = systemSettings.server.replace(/\/$/, "");
+        var server = correctServerAddress(systemSettings.server);
         var url = server + '/uploader/assignmentslist.php?callback=?';   
         $.getJSON(url).success(function(assignments) {
             
@@ -164,16 +164,16 @@ define(function (require, exports, module) {
             systemSettings.rememberMe    = $dlg.find("#rememberMe:checked").val();
             systemSettings.assignment    = $dlg.find("#assignment").val();
             //Save/Remove Settings to Local Storage
-            setSettingsToStorage();
+            saveSettingsToStorage();
             //Upload the Document
-            UploadCurrentDocument();
+            uploadCurrentDocument();
             //Close the currnet Window
             Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
         }
     }
 
     // Save/Remove Settings to Local Storage
-    function setSettingsToStorage() {
+    function saveSettingsToStorage() {
         if (systemSettings.rememberMe === 'checked') {
             localStorage.setItem(strings.STORAGE_KEY, JSON.stringify(systemSettings));
         } else {
@@ -181,8 +181,15 @@ define(function (require, exports, module) {
         }
     }
 
+    function correctServerAddress(server) {
+        server = server.replace(/eng1003.eng.monash.edu/, "eng1003.monash");
+        server = server.replace(/\/$/, "");
+        return server;
+    }
+
+
     // This function is responsible for uploading the current document to the server
-    function UploadCurrentDocument() {
+    function uploadCurrentDocument() {
 
         if (firstRun) {
             firstRun = false;
@@ -203,6 +210,9 @@ define(function (require, exports, module) {
             handleSettings();
             return;
         }
+
+        systemSettings.server = correctServerAddress(systemSettings.server);
+        saveSettingsToStorage();
 
         var projectRoot = ProjectManager.getProjectRoot().fullPath;
 
@@ -269,17 +279,17 @@ define(function (require, exports, module) {
 
         // Upload Command and Shortcut
         var UPLOADER_EXECUTE = "ENG1003Uploader.upload";
-        CommandManager.register(strings.UPLOAD_MENU_TITLE, UPLOADER_EXECUTE, UploadCurrentDocument);
+        CommandManager.register(strings.UPLOAD_MENU_TITLE, UPLOADER_EXECUTE, uploadCurrentDocument);
         menu.addMenuItem(UPLOADER_EXECUTE, strings.UPLOAD_SHORTCUT);
 
         // Right-click handler
         var UPLOADER_EXECUTE_RIGHTCLICK = "ENG1003Uploaderright.upload";
-        CommandManager.register(strings.UPLOAD_MENU_TITLE, UPLOADER_EXECUTE_RIGHTCLICK, UploadCurrentDocument);
+        CommandManager.register(strings.UPLOAD_MENU_TITLE, UPLOADER_EXECUTE_RIGHTCLICK, uploadCurrentDocument);
         Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuDivider();
         Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuItem(UPLOADER_EXECUTE_RIGHTCLICK);
 
         // Toolbar Cloud icon for uploading
         $("#main-toolbar .buttons").append(toolbarUploader);
-        $("#toolbar-uploader").on("click", UploadCurrentDocument);
+        $("#toolbar-uploader").on("click", uploadCurrentDocument);
     });
 });
